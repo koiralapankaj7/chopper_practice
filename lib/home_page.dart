@@ -35,8 +35,24 @@ class HomePage extends StatelessWidget {
       future: Provider.of<PostApiService>(context).getPosts(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
-          // Snapshot's data is the Response
-          // You can see there's no type safety here (only List<dynamic>)
+          /// Exceptions thrown by the Future are stored inside the "error" field of the AsyncSnapshot
+          ///
+          /// After adding a MobileDataInterceptor instance to the list of interceptors, the exception will be thrown. Because of the way we've set up the app in the previous part, this exception will not crash the app - that's because we're using a FutureBuilder widget which kind of automatically handles exceptions.Still, we should show some message to the user to tell him what's going on.
+          /// In this example app, we will display a Text widget to keep things simple.
+          ///
+          /// By the way, if the user is not connected to the Internet at all, HTTP package (which the Chopper uses) will throw its own exception and its message will be displayed in the Text widget as well.
+          if (snapshot.hasError) {
+            return Center(
+              child: Text(
+                snapshot.error.toString(),
+                textAlign: TextAlign.center,
+                textScaleFactor: 1.3,
+              ),
+            );
+          }
+
+          /// Snapshot's data is the Response
+          /// You can see there's no type safety here (only List<dynamic>)
           final List posts = json.decode(snapshot.data.bodyString);
           return _buildPosts(context, posts);
         } else {
