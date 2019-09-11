@@ -2,6 +2,8 @@ import 'package:chopper/chopper.dart';
 import 'package:chopper/chopper.dart' as prefix0;
 
 /// Inorder to make code generation possible we need to create part statement
+///  Source code generation in Dart works by creating a new file which contains a "companion class".
+/// In order for the source gen to know which file to generate and which files are "linked", you need to use the part keyword.
 part 'post_api_service.chopper.dart';
 
 /// This file will store post api service which will extend chopper service
@@ -16,8 +18,18 @@ part 'post_api_service.chopper.dart';
 abstract class PostApiService extends ChopperService {
   /// Function which get all posts from the api
   /// Only declaring function will not work we have to specify which http request we are sending. For that we will anotate function with request type.
+  ///
+  /// Query parameters are specified the same way as @Path
+  /// but obviously with a @Query annotation
   @Get()
   Future<Response> getPosts();
+  // Headers (e.g. for Authentication) can be added in the HTTP method constructor
+  // or also as parameters of the Dart method itself.
+  // @Get(headers: {'Constant-Header-Name': 'Header-Value'})
+  // Future<Response> getPosts([
+  // Parameter headers are suitable for ones which values need to change
+  //   @Header('Changeable-Header-Name') String headerValue,
+  // ]);
 
   /// This function will get single post from the api
   ///
@@ -26,11 +38,16 @@ abstract class PostApiService extends ChopperService {
   /// Decliring int parameter id doesnt assign value to path itself. We have to anotate by @Path() inorder ro receive and assign id to path url from the parameter
   ///
   /// Headers can be used in both [@Get()] anotation function as well as in dart function e.g [getPost()]. If header is of fixed nature use annotation function else use dart function.
+  ///
+  ///
   @Get(path: '/{id}')
   Future<Response> getPost(@Path('id') int id);
 
   /// Implimentation of Put, Patch and Delete request is same as Post request
   /// Post request required body
+  ///
+  /// Put & Patch requests are specified the same way - they must contain the @Body
+
   @Post()
   Future<Response> postPost(
     @Body() Map<String, dynamic> body,
@@ -49,13 +66,17 @@ abstract class PostApiService extends ChopperService {
   /// This way by calling the static function [create()]  will return a fully setup and initialized PostApiService instance.
   static PostApiService create() {
     final client = ChopperClient(
+      // The first part of the URL is now here
       baseUrl: 'https://jsonplaceholder.typicode.com',
       services: [
+        // The generated implementation
         _$PostApiService(),
       ],
+      // Converts data to & from JSON and adds the application/json header.
       converter: prefix0.JsonConverter(),
     );
 
+    // The generated class with the ChopperClient passed in
     return _$PostApiService(client);
   }
 }
