@@ -1,5 +1,8 @@
 import 'package:chopper/chopper.dart';
+import 'package:chopper_practice/data/built_value_converter.dart';
 import 'package:chopper_practice/data/mobile_data_interceptor.dart';
+import 'package:built_collection/built_collection.dart';
+import 'package:chopper_practice/model/built_post.dart';
 
 /// Inorder to make code generation possible we need to create part statement
 ///  Source code generation in Dart works by creating a new file which contains a "companion class".
@@ -22,7 +25,7 @@ abstract class PostApiService extends ChopperService {
   /// Query parameters are specified the same way as @Path
   /// but obviously with a @Query annotation
   @Get()
-  Future<Response> getPosts();
+  Future<Response<BuiltList<BuiltPost>>> getPosts();
   // Headers (e.g. for Authentication) can be added in the HTTP method constructor
   // or also as parameters of the Dart method itself.
   // @Get(headers: {'Constant-Header-Name': 'Header-Value'})
@@ -41,7 +44,7 @@ abstract class PostApiService extends ChopperService {
   ///
   ///
   @Get(path: '/{id}')
-  Future<Response> getPost(@Path('id') int id);
+  Future<Response<BuiltPost>> getPost(@Path('id') int id);
 
   /// Implimentation of Put, Patch and Delete request is same as Post request
   /// Post request required body
@@ -49,8 +52,8 @@ abstract class PostApiService extends ChopperService {
   /// Put & Patch requests are specified the same way - they must contain the @Body
 
   @Post()
-  Future<Response> postPost(
-    @Body() Map<String, dynamic> body,
+  Future<Response<BuiltPost>> postPost(
+    @Body() BuiltPost body,
   );
 
   /// [ChopperClient] is build on top of the default dart [http] client.
@@ -72,8 +75,10 @@ abstract class PostApiService extends ChopperService {
         // The generated implementation
         _$PostApiService(),
       ],
-      // Converts data to & from JSON and adds the application/json header.
-      converter: JsonConverter(),
+      // // Converts data to & from JSON and adds the application/json header.
+      // converter: JsonConverter(),
+      /// Our own converter for built values built on top of the default JsonConverter
+      converter: BuiltValueConverter(),
 
       /// [Interceptor foundations ]:
       ///

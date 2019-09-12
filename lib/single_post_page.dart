@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:chopper/chopper.dart';
 import 'package:chopper_practice/data/post_api_service.dart';
+import 'package:chopper_practice/model/built_post.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -18,7 +19,7 @@ class SinglePostPage extends StatelessWidget {
       appBar: AppBar(
         title: Text('Chopper Blog'),
       ),
-      body: FutureBuilder<Response>(
+      body: FutureBuilder<Response<BuiltPost>>(
         future: Provider.of<PostApiService>(context).getPost(postId),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
